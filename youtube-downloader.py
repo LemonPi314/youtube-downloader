@@ -49,7 +49,7 @@ def formatStreams(streams: list[Stream]):
             formattedStream.append(stream.resolution)
             formattedStream.append(str(stream.fps) + "fps")
             if stream.filesize > 1024 * 1024:
-                formattedStream.append(str(round(stream.filesize / 1024 * 1024, 2)) + " MB")
+                formattedStream.append(str(round(stream.filesize / (1024 * 1024), 2)) + " MB")
 
             else:
                 formattedStream.append(str(round(stream.filesize / 1024, 2)) + " KB")
@@ -62,7 +62,7 @@ def formatStreams(streams: list[Stream]):
             formattedStream.append(stream.abr)
             formattedStream.append(stream.audio_codec)
             if stream.filesize > 1024 * 1024:
-                formattedStream.append(str(round(stream.filesize / 1024 * 1024, 2)) + " MB")
+                formattedStream.append(str(round(stream.filesize / (1024 * 1024), 2)) + " MB")
 
             else:
                 formattedStream.append(str(round(stream.filesize / 1024, 2)) + " KB")
