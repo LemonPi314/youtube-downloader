@@ -74,7 +74,7 @@ def formatStreams(streams: list[Stream]):
 window = sg.Window("YouTube Downloader", layout)
 progressBar = window['progress_bar']
 currentItem = 0
-while(True):
+while True:
     window.refresh()
     event, values = window.read()
     if event == sg.WIN_CLOSED:
