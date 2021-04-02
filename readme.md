@@ -6,6 +6,7 @@ Download YouTube videos in varying resolutions and bitrates.
 * Windows operating system
 * 30 MB of free space for the executable
 * 70 MB of free space for temporary files
+* Internet connection
 ## Usage
 Paste the URL of the video into the URL field, select an output folder, and click 'Get Info'. After a few seconds a list of available streams will appear. Select the streams you would like to download and click 'Download'.
 
