@@ -27,7 +27,7 @@ layout = [
     [
         sg.Column([
             [sg.Text(key='progress_text', size=(80, 1))], 
-            [sg.ProgressBar(max_value=1000, key='progress_bar', size=(65, 20))]
+            [sg.ProgressBar(max_value=1000, key='progress_bar', size=(74, 20))]
         ], justification='center')
     ]
 ]
