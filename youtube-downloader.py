@@ -36,7 +36,7 @@ def ProgressUpdate(stream, chunk, bytesRemaining):
     totalSize = stream.filesize
     bytesDone = totalSize - bytesRemaining
     percent = round(bytesDone / totalSize * 100)
-    window['progress_text'].update(f"Downloading... {percent}% ({currentItem}/{items})")
+    window['progress_text'].update(f"Downloading... {percent}% ({currentItem}/{items})", text_color='white')
     progressBar.update(bytesDone, totalSize)
 
 def FormatStreams(streams: list[Stream]):
@@ -101,7 +101,7 @@ while True:
             window['output_dir_text'].update('')
             window['url_text'].update('')
             try:
-                window['progress_text'].update("Getting info...")
+                window['progress_text'].update("Getting info...", text_color='white')
                 window.refresh()
                 video = YouTube(values['url'], on_progress_callback=ProgressUpdate)
                 window['video_info'].update(
@@ -113,7 +113,7 @@ while True:
                 )
                 formattedStreams = FormatStreams(video.streams)
                 window['stream_list'].update(formattedStreams)
-                window['progress_text'].update('')
+                window['progress_text'].update('', text_color='white')
                 window.refresh()
 
             except Exception as exception:
@@ -132,7 +132,7 @@ while True:
                     
                 videoStream.download(values['output_dir'], None, prefix)
 
-            window['progress_text'].update(f"Downloaded 100% ({items}/{items})")
+            window['progress_text'].update(f"Downloaded 100% ({items}/{items})", text_color='white')
 
         except:
             window['progress_text'].update("Failed to download", text_color='red')
