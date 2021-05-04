@@ -1,6 +1,6 @@
 from os import path
-import PySimpleGUI as sg
 from pytube import YouTube, Stream
+import PySimpleGUI as sg
 
 sg.theme('Black')
 
