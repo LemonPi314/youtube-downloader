@@ -33,80 +33,67 @@ layout = [
 ]
 
 
-def ProgressUpdate(stream, chunk, bytesRemaining):
-    totalSize = stream.filesize
-    bytesDone = totalSize - bytesRemaining
-    percent = round(bytesDone / totalSize * 100)
-    window['progress_text'].update(f"Downloading... {percent}% ({currentItem}/{items})", text_color='white')
-    progressBar.update(bytesDone, totalSize)
+def progress_update(stream, chunk, bytes_remaining):
+    total_size = stream.filesize
+    bytes_done = total_size - bytes_remaining
+    percent = round(bytes_done / total_size * 100)
+    window['progress_text'].update(f"Downloading... {percent}% ({current_item}/{items})", text_color='white')
+    progress_bar.update(bytes_done, total_size)
 
 
-def FormatStreams(streams: list[Stream]):
-    formattedStreams = []
+def format_streams(streams: list[Stream]):
+    formatted_streams = []
     for stream in streams:
-        formattedStream = []
+        formatted_stream = []
         if stream.includes_video_track:
-            formattedStream.append("Video")
-            formattedStream.append(stream.subtype)
-            formattedStream.append(stream.resolution)
-            formattedStream.append(str(stream.fps) + " FPS")
+            formatted_stream.append("Video")
+            formatted_stream.append(stream.subtype)
+            formatted_stream.append(stream.resolution)
+            formatted_stream.append(str(stream.fps) + " FPS")
             if stream.filesize < 1024 ** 2:
-                formattedStream.append(str(round(stream.filesize / 1024, 2)) + " KB")
-
+                formatted_stream.append(str(round(stream.filesize / 1024, 2)) + " KB")
             elif stream.filesize < 1024 ** 3:
-                formattedStream.append(str(round(stream.filesize / (1024 ** 2), 2)) + " MB")
-
+                formatted_stream.append(str(round(stream.filesize / (1024 ** 2), 2)) + " MB")
             else:
-                formattedStream.append(str(round(stream.filesize / (1024 ** 3), 2)) + " GB")
-
-            formattedStream.append(stream.video_codec)
-
+                formatted_stream.append(str(round(stream.filesize / (1024 ** 3), 2)) + " GB")
+            formatted_stream.append(stream.video_codec)
             if stream.includes_audio_track:
-                formattedStream.insert(1, "Audio")
-
+                formatted_stream.insert(1, "Audio")
         elif not stream.includes_video_track:
-            formattedStream.append("Audio")
-            formattedStream.append(stream.subtype)
-            formattedStream.append(stream.abr)
+            formatted_stream.append("Audio")
+            formatted_stream.append(stream.subtype)
+            formatted_stream.append(stream.abr)
             if stream.filesize < 1024 ** 2:
-                formattedStream.append(str(round(stream.filesize / 1024, 2)) + " KB")
-
+                formatted_stream.append(str(round(stream.filesize / 1024, 2)) + " KB")
             elif stream.filesize < 1024 ** 3:
-                formattedStream.append(str(round(stream.filesize / (1024 ** 2), 2)) + " MB")
-
+                formatted_stream.append(str(round(stream.filesize / (1024 ** 2), 2)) + " MB")
             else:
-                formattedStream.append(str(round(stream.filesize / (1024 ** 3), 2)) + " GB")
-
-            formattedStream.append(stream.audio_codec)
-
-        formattedStreams.append(', '.join(formattedStream))
-
-    return formattedStreams
+                formatted_stream.append(str(round(stream.filesize / (1024 ** 3), 2)) + " GB")
+            formatted_stream.append(stream.audio_codec)
+        formatted_streams.append(', '.join(formatted_stream))
+    return formatted_streams
 
 
 window = sg.Window("YouTube Downloader", layout)
-progressBar = window['progress_bar']
-currentItem = 0
+progress_bar = window['progress_bar']
+current_item = 0
 while True:
     window.refresh()
     event, values = window.read()
     if event == sg.WIN_CLOSED:
         break
-
     elif event == 'next_button':
         if not path.exists(values['output_dir']):
             window['output_dir_text'].update("Invalid folder", text_color='red')
-
         if values['url'] == '' or values['url'] is None:
             window['url_text'].update("Invalid URL", text_color='red')
-
         elif path.exists(values['output_dir']):
             window['output_dir_text'].update('')
             window['url_text'].update('')
             try:
                 window['progress_text'].update("Getting info...", text_color='white')
                 window.refresh()
-                video = YouTube(values['url'], on_progress_callback=ProgressUpdate)
+                video = YouTube(values['url'], on_progress_callback=progress_update)
                 window['video_info'].update(
                     f"Title: {str(video.title)}\n"
                     + f"Author: {str(video.author)}\n"
@@ -114,36 +101,28 @@ while True:
                     + f"Length: {str(video.length)}\n"
                     + f"Published: {str(video.publish_date)}"
                 )
-                formattedStreams = FormatStreams(video.streams)
-                window['stream_list'].update(formattedStreams)
+                formatted_streams = format_streams(video.streams)
+                window['stream_list'].update(formatted_streams)
                 window['progress_text'].update('', text_color='white')
                 window.refresh()
-
             except Exception as exception:
                 window['progress_text'].update(f"Failed to get info. {exception}", text_color='red')
-
     elif event == 'download_button':
         try:
             items = len(values['stream_list'])
             for stream in values['stream_list']:
-                currentItem += 1
-                index = formattedStreams.index(stream)
+                current_item += 1
+                index = formatted_streams.index(stream)
                 prefix = None
-                videoStream = video.streams[index]
-                if path.exists(f"{values['output_dir']}/{videoStream.default_filename}"):
-                    prefix = str(currentItem) + '-'
-
-                videoStream.download(values['output_dir'], None, prefix)
-
+                video_stream = video.streams[index]
+                if path.exists(f"{values['output_dir']}/{video_stream.default_filename}"):
+                    prefix = str(current_item) + '-'
+                video_stream.download(values['output_dir'], None, prefix)
             window['progress_text'].update(f"Downloaded 100% ({items}/{items})", text_color='white')
-
-        except Exception:
-            window['progress_text'].update("Failed to download", text_color='red')
-
+        except Exception as exception:
+            window['progress_text'].update(f"Failed to download. {exception}", text_color='red')
     if values['stream_list'] != []:
         window['download_button'].update(disabled=False)
-
     elif values['stream_list'] == []:
         window['download_button'].update(disabled=True)
-
 window.close()
