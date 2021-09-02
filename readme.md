@@ -15,6 +15,8 @@ Optional executable file for Windows users. Python and the required packages are
 - 12 MB of free space for temporary files
 - Internet connection
 ## Usage
+Download the source code, or optionally the executable if you're on Windows, from the [latest release](https://github.com/LemonPi314/youtube-downloader/releases/latest).
+
 Paste the URL of the video into the URL field, select an output folder, and click "Get Info". After a few seconds a list of available streams will appear. Select the streams you would like to download and click "Download".
 
 Some streams have both video and audio tracks. However, some streams have only the video track or only the audio track, which will download as separate files. You can combine video and audio tracks using a tool such as [FFmpeg](https://ffmpeg.org/).  

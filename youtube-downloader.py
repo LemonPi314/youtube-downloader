@@ -1,4 +1,4 @@
-from os import path
+import os
 from pytube import YouTube, Stream
 import PySimpleGUI as sg
 
@@ -11,7 +11,7 @@ layout = [
             [sg.Input(key='url', size=(54, 1))],
             [sg.Text(key='url_text', size=(40, 2))],
             [sg.Text("Output folder", key='output_dir_title')],
-            [sg.Input(key='output_dir'), sg.FolderBrowse()],
+            [sg.Input(key='output_dir', default_text=os.getcwd()), sg.FolderBrowse()],
             [sg.Text(key='output_dir_text', size=(40, 2))],
             [sg.Button("Get info", key='next_button')],
             [sg.Text("Info", key='info_title')],
@@ -33,11 +33,21 @@ layout = [
 ]
 
 
+def format_size(size: float, decimals: int = 1, units: list = ['B', 'KB', 'MB', 'GB', 'TB']):
+    for unit in units:
+        if abs(size) < 1024.0:
+            return f'{round(size, decimals)} {unit}'
+        size /= 1024.0
+    return f'{round(size, decimals)} {units[-1]}'
+
+
 def progress_update(stream, chunk, bytes_remaining):
     total_size = stream.filesize
     bytes_done = total_size - bytes_remaining
     percent = round(bytes_done / total_size * 100)
-    window['progress_text'].update(f"Downloading... {percent}% ({current_item}/{items})", text_color='white')
+    window['progress_text'].update(f"Downloading item {current_item}/{items}, {format_size(bytes_done)}/{format_size(total_size)}, {percent}%", text_color='white')
+    import time
+    time.sleep(1)
     progress_bar.update(bytes_done, total_size)
 
 
@@ -83,11 +93,11 @@ while True:
     if event == sg.WIN_CLOSED:
         break
     elif event == 'next_button':
-        if not path.exists(values['output_dir']):
+        if not os.path.exists(values['output_dir']):
             window['output_dir_text'].update("Invalid folder", text_color='red')
         if values['url'] == '' or values['url'] is None:
             window['url_text'].update("Invalid URL", text_color='red')
-        elif path.exists(values['output_dir']):
+        elif os.path.exists(values['output_dir']):
             window['output_dir_text'].update('')
             window['url_text'].update('')
             try:
@@ -115,7 +125,7 @@ while True:
                 index = formatted_streams.index(stream)
                 prefix = None
                 video_stream = video.streams[index]
-                if path.exists(f"{values['output_dir']}/{video_stream.default_filename}"):
+                if os.path.exists(f"{values['output_dir']}/{video_stream.default_filename}"):
                     prefix = str(current_item) + '-'
                 video_stream.download(values['output_dir'], None, prefix)
             window['progress_text'].update(f"Downloaded 100% ({items}/{items})", text_color='white')
